@@ -5,10 +5,11 @@
   "main": "SKILL.md",
   "files": [
     "SKILL.md",
-    "scripts/",
+    "scripts/*.py",
     "references/",
     "install.sh",
-    "install.ps1"
+    "install.ps1",
+    "demo.sh"
   ],
   "scripts": {
     "scan": "python scripts/scanner.py",

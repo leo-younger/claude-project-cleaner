@@ -25,12 +25,17 @@ WHITELIST = {
 }
 
 
-def dry_run(classified: dict, project_root: Path) -> dict:
+def dry_run(classified: dict, project_root: Path, safe_only: bool = False) -> dict:
     """Simulate cleanup, return what WOULD happen."""
     preview = {"deletes": [], "keeps": [], "total_reclaimable": 0, "errors": []}
 
     for item in classified["items"]:
         action = item.get("action", "KEEP")
+
+        # In safe-only mode, only auto-delete cache (Category E)
+        if safe_only and action != "AUTO_DELETE":
+            preview["keeps"].append({**item, "reason": "Safe-only: kept"})
+            continue
 
         if action in ("AUTO_DELETE", "DELETE_OLD_VERSION"):
             path = Path(item["path"])
@@ -118,6 +123,7 @@ def main():
     parser.add_argument("--auto", action="store_true", help="Execute cleanup automatically")
     parser.add_argument("--rollback", metavar="TIMESTAMP", help="Rollback to a backup timestamp")
     parser.add_argument("--report-only", action="store_true", help="Generate report only, no changes")
+    parser.add_argument("--safe-only", action="store_true", help="Only auto-clean Category E (cache) — safest for unattended runs")
     args = parser.parse_args()
 
     # Rollback mode — no classified.json needed
@@ -146,7 +152,7 @@ def main():
 
     # Dry run (always)
     print("🔍 Dry-run preview:")
-    preview = dry_run(classified, project_root)
+    preview = dry_run(classified, project_root, safe_only=args.safe_only)
     print(f"   Safe to delete: {len(preview['deletes'])} items")
     print(f"   Reclaimable: {format_size(preview['total_reclaimable'])}")
     print(f"   Kept: {len(preview['keeps'])} items")
