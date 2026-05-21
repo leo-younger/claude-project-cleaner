@@ -1,0 +1,40 @@
+name: Test Pipeline
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create sandbox test environment
+        run: |
+          mkdir -p /tmp/test-project/.claude/{skills,plugins,cache,memory,commands}
+          mkdir -p /tmp/fake-claude-home/{skills,plugins,cache}
+          echo '{}' > /tmp/test-project/.claude/settings.json
+          echo "# Test" > /tmp/test-project/CLAUDE.md
+          # Fake cache data
+          echo "old" > /tmp/fake-claude-home/cache/session.json
+          echo "skill" > /tmp/fake-claude-home/skills/test-skill/SKILL.md
+
+      - name: Run scanner
+        run: PYTHONIOENCODING=utf-8 python scripts/scanner.py /tmp/test-project --claude-home /tmp/fake-claude-home
+
+      - name: Run organizer
+        run: PYTHONIOENCODING=utf-8 python scripts/organizer.py /tmp/test-project/.claude/scan_result.json
+
+      - name: Run cleaner dry-run
+        run: PYTHONIOENCODING=utf-8 python scripts/cleaner.py /tmp/test-project/.claude/classified.json --dry-run
+
+      - name: Verify report exists
+        run: test -f /tmp/test-project/.claude/CLAUDE-CLEANUP-REPORT.md && echo "✅ Report generated"
