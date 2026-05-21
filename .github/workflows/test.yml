@@ -25,7 +25,9 @@ jobs:
           echo "# Test" > /tmp/test-project/CLAUDE.md
           # Fake cache data
           echo "old" > /tmp/fake-claude-home/cache/session.json
-          echo "skill" > /tmp/fake-claude-home/skills/test-skill/SKILL.md
+          mkdir -p /tmp/fake-claude-home/skills/test-skill
+          echo "# test skill" > /tmp/fake-claude-home/skills/test-skill/SKILL.md
+          mkdir -p /tmp/fake-claude-home/plugins/cache-v1.2.0 /tmp/fake-claude-home/plugins/cache-v1.1.0
 
       - name: Run scanner
         run: PYTHONIOENCODING=utf-8 python scripts/scanner.py /tmp/test-project --claude-home /tmp/fake-claude-home
