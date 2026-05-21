@@ -1,0 +1,40 @@
+{
+  "name": "claude-project-cleaner",
+  "version": "1.0.0",
+  "description": "Post-project cleanup skill for Claude Code — scan, classify, and safely clean up assets downloaded during development",
+  "main": "SKILL.md",
+  "files": [
+    "SKILL.md",
+    "scripts/",
+    "references/",
+    "install.sh",
+    "install.ps1"
+  ],
+  "scripts": {
+    "scan": "python scripts/scanner.py",
+    "organize": "python scripts/organizer.py",
+    "clean": "python scripts/cleaner.py",
+    "cleanup": "python scripts/scanner.py && python scripts/organizer.py && python scripts/cleaner.py --auto",
+    "report": "python scripts/scanner.py && python scripts/organizer.py && python scripts/cleaner.py --report-only"
+  },
+  "keywords": [
+    "claude-code",
+    "claude",
+    "skill",
+    "cleanup",
+    "organizer",
+    "project-cleaner",
+    "devtools",
+    "claude-skills",
+    "file-management"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USER/claude-project-cleaner"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "python": ">=3.9"
+  }
+}
